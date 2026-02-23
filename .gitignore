@@ -2,8 +2,9 @@ node_modules/
 dist/
 frames/
 ascii_frames/
-output/
+/output/
 raw/
 *.DS_Store
 .env
 .env.*
+.worktrees/
