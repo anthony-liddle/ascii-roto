@@ -11,6 +11,10 @@
     "build": "tsc",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:watch": "vitest",
     "prepare": "husky"
   },
   "author": "Anthony Liddle",
@@ -24,7 +28,10 @@
     "ora": "^8.2.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["canvas", "esbuild"]
+    "onlyBuiltDependencies": [
+      "canvas",
+      "esbuild"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
@@ -35,6 +42,7 @@
     "husky": "^9.1.7",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.25.0"
+    "typescript-eslint": "^8.25.0",
+    "vitest": "^4.0.18"
   }
 }
