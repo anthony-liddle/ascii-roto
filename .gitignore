@@ -7,3 +7,4 @@ raw/
 *.DS_Store
 .env
 .env.*
+.worktrees/
