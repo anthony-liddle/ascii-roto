@@ -29,7 +29,6 @@ ASCII rotoscoping tool — convert video to ASCII art with optional color.
 git clone https://github.com/anthonyliddle/ascii-roto.git
 cd ascii-roto
 pnpm install
-pnpm build
 ```
 
 ### Usage
