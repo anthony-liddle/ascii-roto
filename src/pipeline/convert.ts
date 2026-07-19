@@ -49,7 +49,7 @@ async function frameToAscii(
 
   for (let y = 0; y < asciiHeight; y++) {
     let line = '';
-    const lineColors: PixelColor[] = [];
+    const lineColors: PixelColor[] | null = color ? [] : null;
 
     for (let x = 0; x < width; x++) {
       const pixel = intToRGB(image.getPixelColor(x, y));
@@ -58,11 +58,11 @@ async function frameToAscii(
         : pixel.r; // greyscale: r=g=b
       const char = luminanceToChar(luminance, charRamp);
       line += char;
-      if (color) lineColors.push(pixel);
+      if (lineColors) lineColors.push(pixel);
     }
 
     text += line + '\n';
-    if (colors) colors.push(lineColors);
+    if (colors && lineColors) colors.push(lineColors);
   }
 
   return { text, colors };

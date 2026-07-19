@@ -24,17 +24,10 @@ export function probeVideo(videoPath: string): Promise<VideoInfo> {
 
       if (!videoStream) return reject(new Error('No video stream found'));
 
-      let fps = 30;
-      if (videoStream.r_frame_rate) {
-        const parts = videoStream.r_frame_rate.split('/');
-        fps = parts.length === 2 ? Number(parts[0]) / Number(parts[1]) : Number(parts[0]);
-      }
-
       resolve({
         duration: metadata.format.duration ?? 0,
         width: videoStream.width ?? 0,
         height: videoStream.height ?? 0,
-        fps,
         hasAudio: !!audioStream,
       });
     });

@@ -1,13 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getCharRamp, luminanceToChar, rgbToLuminance } from '../../lib/characters.js';
+import { DEFAULT_CHARS, luminanceToChar, rgbToLuminance } from '../../lib/characters.js';
 
-describe('getCharRamp', () => {
-  it('returns default ramp when called with undefined', () => {
-    expect(getCharRamp(undefined)).toBe(' .:-=+*#%@');
-  });
-
-  it('returns provided ramp string', () => {
-    expect(getCharRamp('abc')).toBe('abc');
+describe('DEFAULT_CHARS', () => {
+  it('is the dark-to-light ramp with a leading space', () => {
+    expect(DEFAULT_CHARS).toBe(' .:-=+*#%@');
   });
 });
 

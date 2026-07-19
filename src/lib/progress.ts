@@ -27,10 +27,6 @@ export function failStep(label?: string): void {
   }
 }
 
-export function info(message: string): void {
-  console.log(chalk.cyan('  ℹ'), message);
-}
-
 export function summary(lines: string[]): void {
   console.log();
   console.log(chalk.bold.green('  Done!'));

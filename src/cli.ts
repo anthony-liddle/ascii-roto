@@ -6,6 +6,7 @@ import path from 'node:path';
 import type { PipelineConfig } from './types.js';
 import { validateFfmpeg, probeVideo } from './lib/ffmpeg.js';
 import { buildConfig } from './lib/config.js';
+import { DEFAULT_CHARS } from './lib/characters.js';
 import { createTempDir, cleanupTempDir } from './lib/temp.js';
 import { startStep, succeedStep, failStep, summary } from './lib/progress.js';
 import { extractFrames } from './pipeline/extract.js';
@@ -33,7 +34,7 @@ program
   .option('-w, --width <n>', 'ASCII width in characters', '80')
   .option('-f, --fps <n>', 'Frames per second', '12')
   .option('-c, --color', 'Enable color mode', false)
-  .option('--chars <string>', 'Character ramp, dark→light', ' .:-=+*#%@')
+  .option('--chars <string>', 'Character ramp, dark→light', DEFAULT_CHARS)
   .option('--font-size <n>', 'Font size for rendered output', '10')
   .option('--bg <color>', 'Background color', 'black')
   .option('--fg <color>', 'Foreground color for B&W', 'white')
