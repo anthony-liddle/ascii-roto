@@ -54,22 +54,18 @@ function renderFrame(
 
   ctx.font = `${fontSize}px monospace`;
   ctx.textBaseline = 'top';
-  (ctx as unknown as Record<string, unknown>).letterSpacing = '2px';
 
   if (color && frame.colors) {
-    // For color: render each character individually with its color,
-    // but use the same x-positioning as the B&W full-line render.
-    // Build each line char-by-char, tracking x via measureText on the
-    // accumulated string prefix so spacing matches the B&W path exactly.
+    // Monospace: every glyph advances by the same width, so position
+    // per-character fills at x * charWidth to match the B&W full-line render.
+    const charWidth = ctx.measureText('M').width;
     for (let y = 0; y < lines.length; y++) {
       const lineColors = frame.colors[y];
       const line = lines[y];
       for (let x = 0; x < line.length; x++) {
         const c = lineColors?.[x];
         ctx.fillStyle = c ? `rgb(${c.r},${c.g},${c.b})` : fg;
-        // Measure prefix to get the exact x position the font engine would use
-        const xPos = ctx.measureText(line.slice(0, x)).width;
-        ctx.fillText(line[x], xPos, y * fontSize);
+        ctx.fillText(line[x], x * charWidth, y * fontSize);
       }
     }
   } else {
