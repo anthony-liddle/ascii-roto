@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import ffmpeg from 'fluent-ffmpeg';
 import path from 'node:path';
 
@@ -6,10 +7,11 @@ export function extractFrames(
   framesDir: string,
   fps: number,
 ): Promise<void> {
+  fs.mkdirSync(framesDir, { recursive: true });
   return new Promise((resolve, reject) => {
     ffmpeg(videoPath)
       .outputOptions([`-r ${fps}`])
-      .output(path.join(framesDir, 'frame%04d.png'))
+      .output(path.join(framesDir, 'frame%06d.png'))
       .on('end', () => resolve())
       .on('error', reject)
       .run();

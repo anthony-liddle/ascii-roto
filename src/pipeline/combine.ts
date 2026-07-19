@@ -22,7 +22,7 @@ export function combineFrames(options: {
     }
 
     const cmd = ffmpeg()
-      .input(path.join(renderedDir, 'frame%04d.png'))
+      .input(path.join(renderedDir, 'frame%06d.png'))
       .inputFPS(fps);
 
     const includeAudio = audio && hasAudio;

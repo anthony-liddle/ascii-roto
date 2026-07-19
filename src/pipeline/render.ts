@@ -16,11 +16,12 @@ export async function renderFramesToImages(
     videoHeight: number;
   },
 ): Promise<void> {
+  fs.mkdirSync(renderedDir, { recursive: true });
   for (let i = 0; i < frames.length; i++) {
     updateStep(`Rendering frame ${i + 1}/${frames.length}`);
     const outputPath = path.join(
       renderedDir,
-      `frame${String(i + 1).padStart(4, '0')}.png`,
+      `frame${String(i + 1).padStart(6, '0')}.png`,
     );
     renderFrame(frames[i], outputPath, options);
   }

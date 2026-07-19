@@ -12,10 +12,9 @@ export async function convertFramesToAscii(
   charRamp: string,
   color: boolean,
 ): Promise<AsciiFrame[]> {
-  const files = fs
-    .readdirSync(framesDir)
-    .filter((f) => f.endsWith('.png'))
-    .sort();
+  const files = sortFrameFiles(
+    fs.readdirSync(framesDir).filter((f) => f.endsWith('.png')),
+  );
 
   const frames: AsciiFrame[] = [];
 
@@ -67,4 +66,10 @@ async function frameToAscii(
   }
 
   return { text, colors };
+}
+
+export function sortFrameFiles(files: string[]): string[] {
+  return [...files].sort((a, b) =>
+    a.localeCompare(b, undefined, { numeric: true }),
+  );
 }
