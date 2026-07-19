@@ -3,9 +3,8 @@
 import { program } from 'commander';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { OutputFormat, PipelineConfig } from './types.js';
 import { validateFfmpeg, probeVideo } from './lib/ffmpeg.js';
-import { getCharRamp } from './lib/characters.js';
+import { buildConfig } from './lib/config.js';
 import { createTempDir, cleanupTempDir } from './lib/temp.js';
 import { startStep, succeedStep, failStep, summary } from './lib/progress.js';
 import { extractFrames } from './pipeline/extract.js';
@@ -50,30 +49,7 @@ async function run(inputArg: string, opts: Record<string, unknown>) {
     process.exit(1);
   }
 
-  const formats = (opts.format as string)
-    .split(',')
-    .map((f) => f.trim()) as OutputFormat[];
-
-  const config: PipelineConfig = {
-    input: inputPath,
-    output: path.resolve(opts.output as string),
-    width: Number(opts.width),
-    fps: Number(opts.fps),
-    color: opts.color as boolean,
-    chars: getCharRamp(opts.chars as string),
-    fontSize: Number(opts.fontSize),
-    bg: opts.bg as string,
-    fg: opts.fg as string,
-    videoWidth: Number(opts.videoWidth),
-    videoHeight: Number(opts.videoHeight),
-    formats,
-    trim: opts.trim as boolean,
-    audio: opts.audio as boolean,
-    keepTemp: opts.keepTemp as boolean,
-    name:
-      (opts.name as string) ||
-      path.basename(inputPath, path.extname(inputPath)),
-  };
+  const config = buildConfig(inputPath, opts);
 
   if (!fs.existsSync(config.output)) {
     fs.mkdirSync(config.output, { recursive: true });
