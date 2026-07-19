@@ -20,7 +20,7 @@ function generateBwModule(frames: AsciiFrame[], outputPath: string): string {
 
   frames.forEach((frame, index) => {
     const varName = `file${index + 1}`;
-    content += `const ${varName} = \`${frame.text}\`;\n`;
+    content += `const ${varName} = ${JSON.stringify(frame.text)};\n`;
     variables.push(varName);
   });
 
@@ -44,7 +44,7 @@ function generateColorModule(
       ? JSON.stringify(frame.colors)
       : 'null';
     frameStrings.push(
-      `  {\n    text: \`${frame.text}\`,\n    colors: ${colorsJson}\n  }`,
+      `  {\n    text: ${JSON.stringify(frame.text)},\n    colors: ${colorsJson}\n  }`,
     );
   }
 
