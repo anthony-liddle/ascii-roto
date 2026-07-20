@@ -111,4 +111,15 @@ describe('generateHtml', () => {
       'utf-8',
     );
   });
+
+  it('safely embeds frame text containing template-literal metacharacters', () => {
+    const capture = captureWritten();
+    const hostile = 'a`${alert(1)}b\\\n';
+
+    generateHtml([{ text: hostile }], makeConfig());
+
+    const html = capture.get();
+    expect(html).toContain(JSON.stringify(hostile));
+    expect(html).not.toContain('`' + hostile + '`');
+  });
 });

@@ -3,9 +3,10 @@
 import { program } from 'commander';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { OutputFormat, PipelineConfig } from './types.js';
+import type { PipelineConfig } from './types.js';
 import { validateFfmpeg, probeVideo } from './lib/ffmpeg.js';
-import { getCharRamp } from './lib/characters.js';
+import { buildConfig } from './lib/config.js';
+import { DEFAULT_CHARS } from './lib/characters.js';
 import { createTempDir, cleanupTempDir } from './lib/temp.js';
 import { startStep, succeedStep, failStep, summary } from './lib/progress.js';
 import { extractFrames } from './pipeline/extract.js';
@@ -15,8 +16,14 @@ import { generateMp4 } from './output/mp4.js';
 import { generateJsModule } from './output/js-module.js';
 import { generateHtml } from './output/html.js';
 
-// Strip bare '--' that pnpm injects when forwarding args via `pnpm run dev -- args`
-const argv = process.argv.filter((arg, i) => !(arg === '--' && i >= 2));
+// pnpm injects a bare '--' when forwarding args via `pnpm run dev -- args`.
+// Strip only the first occurrence so a second '--' keeps its conventional
+// "end of options" meaning.
+const separatorIndex = process.argv.indexOf('--', 2);
+const argv =
+  separatorIndex === -1
+    ? process.argv
+    : process.argv.filter((_, i) => i !== separatorIndex);
 
 program
   .name('ascii-roto')
@@ -27,7 +34,7 @@ program
   .option('-w, --width <n>', 'ASCII width in characters', '80')
   .option('-f, --fps <n>', 'Frames per second', '12')
   .option('-c, --color', 'Enable color mode', false)
-  .option('--chars <string>', 'Character ramp, dark→light', ' .:-=+*#%@')
+  .option('--chars <string>', 'Character ramp, dark→light', DEFAULT_CHARS)
   .option('--font-size <n>', 'Font size for rendered output', '10')
   .option('--bg <color>', 'Background color', 'black')
   .option('--fg <color>', 'Foreground color for B&W', 'white')
@@ -40,48 +47,31 @@ program
   .option('--name <string>', 'Output filename base (default: input filename)')
   .action(run);
 
-program.parse(argv);
+await program.parseAsync(argv);
 
 async function run(inputArg: string, opts: Record<string, unknown>) {
-  const inputPath = path.resolve(inputArg as string);
+  const inputPath = path.resolve(inputArg);
 
   if (!fs.existsSync(inputPath)) {
     console.error(`Error: Input file not found: ${inputPath}`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
-  const formats = (opts.format as string)
-    .split(',')
-    .map((f) => f.trim()) as OutputFormat[];
-
-  const config: PipelineConfig = {
-    input: inputPath,
-    output: path.resolve(opts.output as string),
-    width: Number(opts.width),
-    fps: Number(opts.fps),
-    color: opts.color as boolean,
-    chars: getCharRamp(opts.chars as string),
-    fontSize: Number(opts.fontSize),
-    bg: opts.bg as string,
-    fg: opts.fg as string,
-    videoWidth: Number(opts.videoWidth),
-    videoHeight: Number(opts.videoHeight),
-    formats,
-    trim: opts.trim as boolean,
-    audio: opts.audio as boolean,
-    keepTemp: opts.keepTemp as boolean,
-    name:
-      (opts.name as string) ||
-      path.basename(inputPath, path.extname(inputPath)),
-  };
-
-  if (!fs.existsSync(config.output)) {
-    fs.mkdirSync(config.output, { recursive: true });
+  let config: PipelineConfig;
+  try {
+    config = buildConfig(inputPath, opts);
+  } catch (err) {
+    console.error(`Error: ${messageOf(err)}`);
+    process.exitCode = 1;
+    return;
   }
 
   let tempDir = '';
 
   try {
+    fs.mkdirSync(config.output, { recursive: true });
+
     startStep('Validating ffmpeg...');
     validateFfmpeg();
     succeedStep('ffmpeg found');
@@ -97,7 +87,12 @@ async function run(inputArg: string, opts: Record<string, unknown>) {
     startStep('Extracting frames...');
     const framesDir = path.join(tempDir, 'frames');
     await extractFrames(config.input, framesDir, config.fps);
-    const frameCount = fs.readdirSync(framesDir).filter((f) => f.endsWith('.png')).length;
+    const frameCount = fs
+      .readdirSync(framesDir)
+      .filter((f) => f.endsWith('.png')).length;
+    if (frameCount === 0) {
+      throw new Error('No frames were extracted — is this a valid video file?');
+    }
     succeedStep(`Extracted ${frameCount} frames`);
 
     startStep('Converting to ASCII...');
@@ -140,11 +135,15 @@ async function run(inputArg: string, opts: Record<string, unknown>) {
 
     summary(outputs.map((o) => path.relative(process.cwd(), o)));
   } catch (err) {
-    failStep((err as Error).message);
-    process.exit(1);
+    failStep(messageOf(err));
+    process.exitCode = 1;
   } finally {
     if (tempDir && !config.keepTemp) {
       cleanupTempDir(tempDir);
     }
   }
+}
+
+function messageOf(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
 }

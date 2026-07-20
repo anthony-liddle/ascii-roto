@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "tsx ./src/cli.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit",
@@ -26,12 +26,6 @@
     "fluent-ffmpeg": "^2.1.3",
     "jimp": "^1.6.1",
     "ora": "^9.4.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "canvas",
-      "esbuild"
-    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",

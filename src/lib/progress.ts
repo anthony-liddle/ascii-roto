@@ -22,11 +22,9 @@ export function failStep(label?: string): void {
   if (spinner) {
     spinner.fail(label);
     spinner = null;
+  } else if (label) {
+    console.error(chalk.red('  ✖'), label);
   }
-}
-
-export function info(message: string): void {
-  console.log(chalk.cyan('  ℹ'), message);
 }
 
 export function summary(lines: string[]): void {

@@ -16,11 +16,12 @@ export async function renderFramesToImages(
     videoHeight: number;
   },
 ): Promise<void> {
+  fs.mkdirSync(renderedDir, { recursive: true });
   for (let i = 0; i < frames.length; i++) {
     updateStep(`Rendering frame ${i + 1}/${frames.length}`);
     const outputPath = path.join(
       renderedDir,
-      `frame${String(i + 1).padStart(4, '0')}.png`,
+      `frame${String(i + 1).padStart(6, '0')}.png`,
     );
     renderFrame(frames[i], outputPath, options);
   }
@@ -41,9 +42,15 @@ function renderFrame(
   const lines = frame.text.split('\n').filter((l) => l.length > 0);
   const { fontSize, bg, fg, color } = options;
 
-  // Match original: canvas sized from ASCII art content
-  const canvasWidth = (lines[0]?.length ?? 0) * fontSize;
-  const canvasHeight = lines.length * fontSize;
+  // Measure the real monospace glyph width before sizing the canvas, so the
+  // canvas hugs the text and ffmpeg's pad filter centers the actual art.
+  const probe = createCanvas(1, 1).getContext('2d');
+  probe.font = `${fontSize}px monospace`;
+  const charWidth = probe.measureText('M').width;
+
+  const lineLength = lines[0]?.length ?? 0;
+  const canvasWidth = Math.max(1, Math.ceil(lineLength * charWidth));
+  const canvasHeight = Math.max(1, lines.length * fontSize);
 
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
@@ -53,22 +60,17 @@ function renderFrame(
 
   ctx.font = `${fontSize}px monospace`;
   ctx.textBaseline = 'top';
-  (ctx as unknown as Record<string, unknown>).letterSpacing = '2px';
 
   if (color && frame.colors) {
-    // For color: render each character individually with its color,
-    // but use the same x-positioning as the B&W full-line render.
-    // Build each line char-by-char, tracking x via measureText on the
-    // accumulated string prefix so spacing matches the B&W path exactly.
+    // Monospace: every glyph advances by the same width, so position
+    // per-character fills at x * charWidth to match the B&W full-line render.
     for (let y = 0; y < lines.length; y++) {
       const lineColors = frame.colors[y];
       const line = lines[y];
       for (let x = 0; x < line.length; x++) {
         const c = lineColors?.[x];
         ctx.fillStyle = c ? `rgb(${c.r},${c.g},${c.b})` : fg;
-        // Measure prefix to get the exact x position the font engine would use
-        const xPos = ctx.measureText(line.slice(0, x)).width;
-        ctx.fillText(line[x], xPos, y * fontSize);
+        ctx.fillText(line[x], x * charWidth, y * fontSize);
       }
     }
   } else {

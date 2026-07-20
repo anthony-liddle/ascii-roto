@@ -34,6 +34,5 @@ export interface VideoInfo {
   duration: number;
   width: number;
   height: number;
-  fps: number;
   hasAudio: boolean;
 }

@@ -12,7 +12,7 @@ export function generateHtml(
 
   // Note: This generates a self-contained HTML file where all frame data is
   // produced by our own pipeline from video pixel data — no untrusted input.
-  // Color frames use innerHTML with pre-escaped content for per-character coloring.
+  // Frame data is serialized via JSON.stringify; color frames use innerHTML with HTML-escaped characters.
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,7 +132,7 @@ play();
 
 function buildFrameData(frames: AsciiFrame[], color: boolean): string {
   if (!color) {
-    const items = frames.map((f) => '`' + f.text + '`');
+    const items = frames.map((f) => JSON.stringify(f.text));
     return `[\n${items.join(',\n')}\n]`;
   }
 
@@ -149,9 +149,9 @@ function buildFrameData(frames: AsciiFrame[], color: boolean): string {
           html += char;
         }
       }
-      html += '\\n';
+      html += '\n';
     }
-    return `  { html: \`${html}\` }`;
+    return `  { html: ${JSON.stringify(html)} }`;
   });
 
   return `[\n${items.join(',\n')}\n]`;

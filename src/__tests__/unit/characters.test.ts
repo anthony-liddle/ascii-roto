@@ -1,13 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getCharRamp, luminanceToChar, rgbToLuminance } from '../../lib/characters.js';
+import { DEFAULT_CHARS, luminanceToChar, rgbToLuminance } from '../../lib/characters.js';
 
-describe('getCharRamp', () => {
-  it('returns default ramp when called with undefined', () => {
-    expect(getCharRamp(undefined)).toBe(' .:-=+*#%@');
-  });
-
-  it('returns provided ramp string', () => {
-    expect(getCharRamp('abc')).toBe('abc');
+describe('DEFAULT_CHARS', () => {
+  it('is the dark-to-light ramp with a leading space', () => {
+    expect(DEFAULT_CHARS).toBe(' .:-=+*#%@');
   });
 });
 
@@ -32,6 +28,16 @@ describe('luminanceToChar', () => {
   it('works with single character ramp', () => {
     expect(luminanceToChar(0, 'X')).toBe('X');
     expect(luminanceToChar(255, 'X')).toBe('X');
+  });
+
+  it('gives the brightest character a full luminance bucket, not just 255', () => {
+    // Even 256-based buckets: 242 falls in the top bucket (242/25.6 = 9.45)
+    expect(luminanceToChar(242, ramp)).toBe('@');
+  });
+
+  it('keeps luminance 0 and 255 at the ramp endpoints', () => {
+    expect(luminanceToChar(0, ramp)).toBe(' ');
+    expect(luminanceToChar(255, ramp)).toBe('@');
   });
 });
 

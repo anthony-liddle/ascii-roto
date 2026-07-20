@@ -3,7 +3,7 @@
 ASCII rotoscoping tool — convert video to ASCII art with optional color.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
 
 ## Features
 
@@ -26,7 +26,7 @@ ASCII rotoscoping tool — convert video to ASCII art with optional color.
 ### Install
 
 ```bash
-git clone https://github.com/anthonyliddle/ascii-roto.git
+git clone https://github.com/anthony-liddle/ascii-roto.git
 cd ascii-roto
 pnpm install
 ```

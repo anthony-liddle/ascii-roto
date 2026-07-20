@@ -1,1 +1,3 @@
-onlyBuiltDependencies: canvas
+onlyBuiltDependencies:
+  - canvas
+  - esbuild

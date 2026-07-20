@@ -6,7 +6,7 @@ Thanks for your interest in contributing to ascii-roto!
 
 ```bash
 # Clone the repo
-git clone https://github.com/anthonyliddle/ascii-roto.git
+git clone https://github.com/anthony-liddle/ascii-roto.git
 cd ascii-roto
 
 # Install dependencies (requires pnpm)
