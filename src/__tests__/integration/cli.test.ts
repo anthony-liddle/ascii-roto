@@ -20,10 +20,19 @@ function ffmpegAvailable(): boolean {
   }
 }
 
+// Matches only createTempDir's `ascii-roto-${randomUUID()}` shape (see
+// src/lib/temp.ts). This deliberately excludes this file's own
+// `ascii-roto-cli-*` fixture dir and pipeline.test.ts's
+// `ascii-roto-integration-*` dir, both of which run concurrently in the
+// same vitest project and would otherwise cause flaky snapshot mismatches.
+const CLI_TEMP_DIR_RE =
+  /^ascii-roto-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
 function listTempDirs(): string[] {
   return fs
     .readdirSync(os.tmpdir())
-    .filter((f) => f.startsWith('ascii-roto-'));
+    .filter((f) => CLI_TEMP_DIR_RE.test(f))
+    .sort();
 }
 
 async function runCli(args: string[]) {
