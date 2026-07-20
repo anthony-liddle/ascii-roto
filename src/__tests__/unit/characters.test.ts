@@ -29,6 +29,16 @@ describe('luminanceToChar', () => {
     expect(luminanceToChar(0, 'X')).toBe('X');
     expect(luminanceToChar(255, 'X')).toBe('X');
   });
+
+  it('gives the brightest character a full luminance bucket, not just 255', () => {
+    // Even 256-based buckets: 242 falls in the top bucket (242/25.6 = 9.45)
+    expect(luminanceToChar(242, ramp)).toBe('@');
+  });
+
+  it('keeps luminance 0 and 255 at the ramp endpoints', () => {
+    expect(luminanceToChar(0, ramp)).toBe(' ');
+    expect(luminanceToChar(255, ramp)).toBe('@');
+  });
 });
 
 describe('rgbToLuminance', () => {

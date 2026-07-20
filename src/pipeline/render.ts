@@ -42,9 +42,15 @@ function renderFrame(
   const lines = frame.text.split('\n').filter((l) => l.length > 0);
   const { fontSize, bg, fg, color } = options;
 
-  // Match original: canvas sized from ASCII art content
-  const canvasWidth = (lines[0]?.length ?? 0) * fontSize;
-  const canvasHeight = lines.length * fontSize;
+  // Measure the real monospace glyph width before sizing the canvas, so the
+  // canvas hugs the text and ffmpeg's pad filter centers the actual art.
+  const probe = createCanvas(1, 1).getContext('2d');
+  probe.font = `${fontSize}px monospace`;
+  const charWidth = probe.measureText('M').width;
+
+  const lineLength = lines[0]?.length ?? 0;
+  const canvasWidth = Math.max(1, Math.ceil(lineLength * charWidth));
+  const canvasHeight = Math.max(1, lines.length * fontSize);
 
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
@@ -58,7 +64,6 @@ function renderFrame(
   if (color && frame.colors) {
     // Monospace: every glyph advances by the same width, so position
     // per-character fills at x * charWidth to match the B&W full-line render.
-    const charWidth = ctx.measureText('M').width;
     for (let y = 0; y < lines.length; y++) {
       const lineColors = frame.colors[y];
       const line = lines[y];
