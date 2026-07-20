@@ -24,13 +24,13 @@ function ffmpegAvailable(): boolean {
 }
 
 describe('pipeline integration', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     if (!ffmpegAvailable()) {
       return;
     }
 
-    fs.mkdirSync(FRAMES_DIR, { recursive: true });
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    fs.mkdirSync(path.dirname(FIXTURE_VIDEO), { recursive: true });
 
     // Generate a tiny 1-second test video (160x120, solid color with movement)
     execFileSync('ffmpeg', [
@@ -41,6 +41,10 @@ describe('pipeline integration', () => {
       '-y',
       FIXTURE_VIDEO,
     ], { stdio: 'ignore' });
+
+    // Extraction is shared setup — every test below reads its results,
+    // none depends on another test having run first.
+    await extractFrames(FIXTURE_VIDEO, FRAMES_DIR, 6);
   });
 
   afterAll(() => {
@@ -49,9 +53,7 @@ describe('pipeline integration', () => {
     }
   });
 
-  it.skipIf(!ffmpegAvailable())('extracts frames from video', async () => {
-    await extractFrames(FIXTURE_VIDEO, FRAMES_DIR, 6);
-
+  it.skipIf(!ffmpegAvailable())('extraction produces PNG frames', () => {
     const frames = fs.readdirSync(FRAMES_DIR).filter((f) => f.endsWith('.png'));
     expect(frames.length).toBeGreaterThan(0);
   });
