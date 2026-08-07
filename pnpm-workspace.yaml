@@ -1,3 +1,11 @@
 onlyBuiltDependencies:
   - canvas
   - esbuild
+
+# Pin patched versions of transitive dev dependencies flagged by Dependabot.
+# Each stays within its current major so no direct dependency changes behaviour.
+overrides:
+  vite: ^7.3.6
+  js-yaml: ^4.3.1
+  fast-uri: ^3.1.5
+  brace-expansion: ^5.0.9
