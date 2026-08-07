@@ -19,6 +19,9 @@
   },
   "author": "Anthony Liddle",
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "canvas": "^3.2.3",
     "chalk": "^6.0.0",
