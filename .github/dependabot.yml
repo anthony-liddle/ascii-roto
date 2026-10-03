@@ -6,6 +6,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: "chore(deps)"
+    # Keep @types/node on the runtime major in .nvmrc; bump both together.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         update-types:

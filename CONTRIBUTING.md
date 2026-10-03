@@ -27,7 +27,7 @@ pnpm typecheck
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 24+ (run `nvm use` to pick up the version in `.nvmrc`)
 - pnpm 10+
 - ffmpeg and ffprobe installed (`brew install ffmpeg` on macOS)
 

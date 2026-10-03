@@ -19,7 +19,7 @@ ASCII rotoscoping tool — convert video to ASCII art with optional color.
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 24+ (run `nvm use` to pick up the version in `.nvmrc`)
 - pnpm
 - ffmpeg (`brew install ffmpeg` on macOS)
 
