@@ -20,7 +20,7 @@
   "author": "Anthony Liddle",
   "license": "MIT",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "dependencies": {
     "canvas": "^3.2.3",
