@@ -31,15 +31,15 @@
     "ora": "^9.4.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.3",
-    "@commitlint/config-conventional": "^21.2.3",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@types/fluent-ffmpeg": "^2.1.27",
-    "@types/node": "^24.19.1",
-    "eslint": "^10.11.0",
+    "@types/node": "^24.19.2",
+    "eslint": "^10.13.0",
     "husky": "^9.1.7",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.0",
-    "vitest": "^5.0.3"
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
   }
 }
